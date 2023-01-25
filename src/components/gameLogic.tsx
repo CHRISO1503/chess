@@ -31,6 +31,10 @@ export default function GameLogic({
     const [blackKingHasMoved, setBlackKingHasMoved] = useState(false);
     const [whiteRooksMoved, setWhiteRooksMoved] = useState([false, false]);
     const [blackRooksMoved, setBlackRooksMoved] = useState([false, false]);
+    const [passant, setPassant] = useState({
+        passantable: false,
+        at: 0,
+    });
 
     // Handle click of any square
     useEffect(() => {
@@ -81,7 +85,26 @@ export default function GameLogic({
                     setBlackKingHasMoved(true);
                 }
             }
-            // Standard piece take
+            // Set passant
+            if (
+                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P" &&
+                Math.abs(clickedSquare[1] - clickedSquare[3]) == 2
+            ) {
+                setPassant({ passantable: true, at: clickedSquare[0] });
+            } else {
+                setPassant({ passantable: false, at: 0 });
+            }
+            // Passant
+            if (
+                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P" &&
+                Math.abs(clickedSquare[1] - clickedSquare[3]) == 1 &&
+                Math.abs(clickedSquare[0] - clickedSquare[2]) == 1
+            ) {
+                if (passant.passantable && passant.at == clickedSquare[0]) {
+                    boardMap[clickedSquare[0]][clickedSquare[3]] = {};
+                }
+            }
+            // Standard piece move/take
             boardMap[clickedSquare[0]][clickedSquare[1]] =
                 boardMap[clickedSquare[2]][clickedSquare[3]];
             boardMap[clickedSquare[2]][clickedSquare[3]] = {};
@@ -172,6 +195,13 @@ export default function GameLogic({
                             moveMap[square[0] + 1][square[1] - 1] = true;
                         }
                     }
+                    if (square[1] == 3 && passant.passantable) {
+                        if (passant.at == square[0] - 1) {
+                            moveMap[square[0] - 1][2] = true;
+                        } else if (passant.at == square[0] + 1) {
+                            moveMap[square[0] + 1][2] = true;
+                        }
+                    }
                 } else {
                     if (square[1] + 1 < 8) {
                         if (!boardMap[square[0]][square[1] + 1].pieceType) {
@@ -198,6 +228,13 @@ export default function GameLogic({
                             boardMap[square[0] + 1][square[1] + 1].isWhite
                         ) {
                             moveMap[square[0] + 1][square[1] + 1] = true;
+                        }
+                    }
+                    if (square[1] == 4 && passant.passantable) {
+                        if (passant.at == square[0] - 1) {
+                            moveMap[square[0] - 1][5] = true;
+                        } else if (passant.at == square[0] + 1) {
+                            moveMap[square[0] + 1][5] = true;
                         }
                     }
                 }
