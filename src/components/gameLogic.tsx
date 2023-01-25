@@ -27,28 +27,69 @@ export default function GameLogic({
 }) {
     const [clickedSquare, setClickedSquare] = useState([] as number[]);
     const [isWhitesTurn, setIsWhitesTurn] = useState(true);
-    const [pieceSelected, setPieceSelected] = useState(false);
+    const [whiteKingHasMoved, setWhiteKingHasMoved] = useState(false);
+    const [blackKingHasMoved, setBlackKingHasMoved] = useState(false);
+    const [whiteRooksMoved, setWhiteRooksMoved] = useState([false, false]);
+    const [blackRooksMoved, setBlackRooksMoved] = useState([false, false]);
 
     // Handle click of any square
     useEffect(() => {
+        console.log(clickedSquare);
         setMoveMap(emptyMoveMap());
         if (boardMap.length > 0) {
             const pieceClicked = boardMap[clickedSquare[0]][clickedSquare[1]];
             if (pieceClicked.isWhite == isWhitesTurn) {
                 calculateValidMoves(pieceClicked, clickedSquare);
             } else {
-                // If square is in moveMap then replace square with piece and change prev piece to empty
-                if (moveMap[clickedSquare[0]][clickedSquare[1]]) {
-                    boardMap[clickedSquare[0]][clickedSquare[1]] =
-                        boardMap[clickedSquare[2]][clickedSquare[3]];
-                    boardMap[clickedSquare[2]][clickedSquare[3]] = {};
-                    setBoardMap(boardMap.slice());
-                    setMoveMap(emptyMoveMap());
-                    setIsWhitesTurn(!isWhitesTurn);
-                }
+                movePiece();
             }
         }
     }, [clickedSquare]);
+
+    function movePiece() {
+        if (moveMap[clickedSquare[0]][clickedSquare[1]]) {
+            // Set if rook or king moved
+            if (clickedSquare[2] == 0 && clickedSquare[3] == 7) {
+                whiteRooksMoved[0] = true;
+                setWhiteRooksMoved(whiteRooksMoved.slice());
+            } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
+                whiteRooksMoved[1] = true;
+                setWhiteRooksMoved(whiteRooksMoved.slice());
+            } else if (clickedSquare[2] == 0 && clickedSquare[3] == 0) {
+                blackRooksMoved[0] = true;
+                setBlackRooksMoved(blackRooksMoved.slice());
+            } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
+                blackRooksMoved[1] = true;
+                setBlackRooksMoved(blackRooksMoved.slice());
+            } else if (
+                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "K"
+            ) {
+                // Castling
+                if (clickedSquare[2] - clickedSquare[0] == 2) {
+                    boardMap[3][clickedSquare[1]] =
+                        boardMap[0][clickedSquare[1]];
+                    boardMap[0][clickedSquare[1]] = {};
+                } else if (clickedSquare[2] - clickedSquare[0] == -2) {
+                    boardMap[5][clickedSquare[1]] =
+                        boardMap[7][clickedSquare[1]];
+                    boardMap[7][clickedSquare[1]] = {};
+                }
+                // King has moved
+                if (boardMap[clickedSquare[2]][clickedSquare[3]].isWhite) {
+                    setWhiteKingHasMoved(true);
+                } else {
+                    setBlackKingHasMoved(true);
+                }
+            }
+            // Standard piece take
+            boardMap[clickedSquare[0]][clickedSquare[1]] =
+                boardMap[clickedSquare[2]][clickedSquare[3]];
+            boardMap[clickedSquare[2]][clickedSquare[3]] = {};
+            setBoardMap(boardMap.slice());
+            setMoveMap(emptyMoveMap());
+            setIsWhitesTurn(!isWhitesTurn);
+        }
+    }
 
     function calculateValidMoves(piece: squareInfo, square: number[]) {
         let moveMap = emptyMoveMap();
@@ -195,8 +236,10 @@ export default function GameLogic({
                 break;
             case "R":
                 setMovesInDirection(straights);
+                break;
             case "Q":
                 setMovesInDirection(royals);
+                break;
             case "K":
                 for (const dir of royals) {
                     if (
@@ -220,6 +263,44 @@ export default function GameLogic({
                         }
                     }
                 }
+                if (isWhitesTurn) {
+                    if (!whiteKingHasMoved) {
+                        if (
+                            !whiteRooksMoved[0] &&
+                            !boardMap[1][7].pieceType &&
+                            !boardMap[2][7].pieceType &&
+                            !boardMap[3][7].pieceType
+                        ) {
+                            moveMap[2][7] = true;
+                        }
+                        if (
+                            !whiteRooksMoved[1] &&
+                            !boardMap[5][7].pieceType &&
+                            !boardMap[6][7].pieceType
+                        ) {
+                            moveMap[6][7] = true;
+                        }
+                    }
+                } else {
+                    if (!blackKingHasMoved) {
+                        if (
+                            !blackRooksMoved[0] &&
+                            !boardMap[1][0].pieceType &&
+                            !boardMap[2][0].pieceType &&
+                            !boardMap[3][0].pieceType
+                        ) {
+                            moveMap[2][0] = true;
+                        }
+                        if (
+                            !blackRooksMoved[1] &&
+                            !boardMap[5][0].pieceType &&
+                            !boardMap[6][0].pieceType
+                        ) {
+                            moveMap[6][0] = true;
+                        }
+                    }
+                }
+                break;
             default:
                 break;
         }
