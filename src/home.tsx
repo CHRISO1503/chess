@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import Board from "./components/board";
+import GameLogic from "./components/gameLogic";
 import Pieces from "./components/pieces";
+import ValidMoves from "./components/validMoves";
 
 export const pieceWidth = 70;
 export const tileWidth = 100;
@@ -13,13 +15,17 @@ export interface squareInfo {
 export default function Home() {
     const [boardMap, setBoardMap] = useState([] as squareInfo[][]);
     const backRank = ["R", "N", "B", "Q", "K", "B", "N", "R"];
+    const [moveMap, setMoveMap] = useState([] as boolean[][]);
 
     useEffect(() => {
-        // Initialise boardMap
+        // Initialise boardMap and moveMap
         let boardMap = [] as squareInfo[][];
+        let moveMap = [] as boolean[][];
         for (let i = 0; i < 8; i++) {
             boardMap.push([]);
+            moveMap.push([]);
             for (let j = 0; j < 8; j++) {
+                moveMap[i].push(false);
                 switch (i) {
                     case 0:
                         boardMap[i].push({
@@ -45,6 +51,7 @@ export default function Home() {
                 }
             }
         }
+        setMoveMap(moveMap.slice());
         // Set transpose
         setBoardMap(
             boardMap[0].map((_, colIndex) =>
@@ -71,6 +78,14 @@ export default function Home() {
                 </div>
                 <div style={{ position: "absolute" }}>
                     <Pieces boardMap={boardMap} />
+                </div>
+                <div style={{ position: "absolute" }}>
+                    <GameLogic
+                        moveMap={moveMap}
+                        setMoveMap={setMoveMap}
+                        boardMap={boardMap}
+                        setBoardMap={setBoardMap}
+                    />
                 </div>
             </div>
         </>

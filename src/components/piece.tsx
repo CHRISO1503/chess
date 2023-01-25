@@ -54,7 +54,9 @@ export default function Piece({ squareInfo }: { squareInfo: squareInfo }) {
                     }
                     style={{
                         width: `${pieceWidth * sizeMultipliers[pieceIndex]}px`,
+                        userSelect: "none",
                     }}
+                    draggable="false"
                 />
             ) : (
                 <div></div>
