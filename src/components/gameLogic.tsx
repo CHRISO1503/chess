@@ -1,6 +1,9 @@
 import ValidMoves from "./validMoves";
 import { useEffect, useState } from "react";
 import { squareInfo } from "../home";
+import PromotePopup from "./promotePopup";
+
+// Add queening then checks
 
 export function emptyMoveMap() {
     let array = [] as boolean[][];
@@ -11,6 +14,11 @@ export function emptyMoveMap() {
         }
     }
     return array;
+}
+export interface Promotion {
+    promotion?: boolean;
+    at?: number;
+    piece?: string;
 }
 
 // Clicks are triggered from validMoves.tsx
@@ -35,6 +43,7 @@ export default function GameLogic({
         passantable: false,
         at: 0,
     });
+    const [promotion, setPromotion] = useState({} as Promotion);
 
     // Handle click of any square
     useEffect(() => {
@@ -49,6 +58,30 @@ export default function GameLogic({
             }
         }
     }, [clickedSquare]);
+
+    // Handle turn if promotion
+    useEffect(() => {
+        if (promotion.promotion != null && promotion.at) {
+            if (!promotion.promotion) {
+                if (isWhitesTurn) {
+                    boardMap[promotion.at][0] = {
+                        pieceType: promotion.piece,
+                        isWhite: isWhitesTurn,
+                    };
+                    boardMap[promotion.at][1] = {};
+                } else {
+                    boardMap[promotion.at][7] = {
+                        pieceType: promotion.piece,
+                        isWhite: isWhitesTurn,
+                    };
+                    boardMap[promotion.at][6] = {};
+                }
+                setBoardMap(boardMap.slice());
+                setMoveMap(emptyMoveMap());
+                setIsWhitesTurn(!isWhitesTurn);
+            }
+        }
+    }, [promotion]);
 
     function movePiece() {
         if (moveMap[clickedSquare[0]][clickedSquare[1]]) {
@@ -85,14 +118,17 @@ export default function GameLogic({
                     setBlackKingHasMoved(true);
                 }
             }
-            // Set passant
-            if (
-                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P" &&
-                Math.abs(clickedSquare[1] - clickedSquare[3]) == 2
-            ) {
-                setPassant({ passantable: true, at: clickedSquare[0] });
-            } else {
-                setPassant({ passantable: false, at: 0 });
+            // Set passant and promote
+            if (boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P") {
+                if (Math.abs(clickedSquare[1] - clickedSquare[3]) == 2) {
+                    setPassant({ passantable: true, at: clickedSquare[0] });
+                } else {
+                    setPassant({ passantable: false, at: 0 });
+                }
+                if (clickedSquare[1] == 0 || clickedSquare[1] == 7) {
+                    setPromotion({ promotion: true, at: clickedSquare[0] });
+                    return;
+                }
             }
             // Passant
             if (
@@ -171,11 +207,14 @@ export default function GameLogic({
                     if (square[1] - 1 >= 0) {
                         if (!boardMap[square[0]][square[1] - 1].pieceType) {
                             moveMap[square[0]][square[1] - 1] = true;
-                            if (
-                                !boardMap[square[0]][square[1] - 2].pieceType &&
-                                square[1] == 6
-                            ) {
-                                moveMap[square[0]][square[1] - 2] = true;
+                            if (square[1] - 2 >= 0) {
+                                if (
+                                    !boardMap[square[0]][square[1] - 2]
+                                        .pieceType &&
+                                    square[1] == 6
+                                ) {
+                                    moveMap[square[0]][square[1] - 2] = true;
+                                }
                             }
                         }
                     }
@@ -206,11 +245,14 @@ export default function GameLogic({
                     if (square[1] + 1 < 8) {
                         if (!boardMap[square[0]][square[1] + 1].pieceType) {
                             moveMap[square[0]][square[1] + 1] = true;
-                            if (
-                                !boardMap[square[0]][square[1] + 2].pieceType &&
-                                square[1] == 1
-                            ) {
-                                moveMap[square[0]][square[1] + 2] = true;
+                            if (square[1] + 2 < 8) {
+                                if (
+                                    !boardMap[square[0]][square[1] + 2]
+                                        .pieceType &&
+                                    square[1] == 1
+                                ) {
+                                    moveMap[square[0]][square[1] + 2] = true;
+                                }
                             }
                         }
                     }
@@ -345,10 +387,21 @@ export default function GameLogic({
     }
 
     return (
-        <ValidMoves
-            moveMap={moveMap}
-            clickedSquare={clickedSquare}
-            setClickedSquare={setClickedSquare}
-        />
+        <>
+            <ValidMoves
+                moveMap={moveMap}
+                clickedSquare={clickedSquare}
+                setClickedSquare={setClickedSquare}
+            />
+            {promotion.promotion ? (
+                <PromotePopup
+                    promotion={promotion}
+                    isWhitesTurn={isWhitesTurn}
+                    setPromotion={setPromotion}
+                />
+            ) : (
+                <></>
+            )}
+        </>
     );
 }

@@ -12,24 +12,25 @@ import blackQueen from "../assets/pieces/b_queen_svg_NoShadow.svg";
 import blackKing from "../assets/pieces/b_king_svg_NoShadow.svg";
 import { pieceWidth, squareInfo, tileWidth } from "../home";
 
+export const sizeMultipliers = [1, 1.1, 1.2, 1.05, 1.3, 1.25];
+export const whiteAssets = [
+    whitePawn,
+    whiteKnight,
+    whiteBishop,
+    whiteRook,
+    whiteQueen,
+    whiteKing,
+];
+export const blackAssets = [
+    blackPawn,
+    blackKnight,
+    blackBishop,
+    blackRook,
+    blackQueen,
+    blackKing,
+];
+
 export default function Piece({ squareInfo }: { squareInfo: squareInfo }) {
-    const whiteAssets = [
-        whitePawn,
-        whiteKnight,
-        whiteBishop,
-        whiteRook,
-        whiteQueen,
-        whiteKing,
-    ];
-    const blackAssets = [
-        blackPawn,
-        blackKnight,
-        blackBishop,
-        blackRook,
-        blackQueen,
-        blackKing,
-    ];
-    const sizeMultipliers = [1, 1.1, 1.2, 1.05, 1.3, 1.25];
     const piecesString = "PNBRQK";
     const isWhite = squareInfo.isWhite ? squareInfo.isWhite : false;
     const pieceIndex = squareInfo.pieceType
