@@ -29,7 +29,9 @@ export default function PromotePopup({
                 <div
                     style={{
                         position: "absolute",
-                        left: tileWidth * (promotion.at ? promotion.at + 1 : 0),
+                        left:
+                            tileWidth *
+                            (promotion.at != null ? promotion.at + 1 : 0),
                         top: isWhitesTurn ? 0 : tileWidth * 4,
                         display: "flex",
                         flexDirection: "column",

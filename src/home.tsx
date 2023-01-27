@@ -7,19 +7,25 @@ import ValidMoves from "./components/validMoves";
 export const pieceWidth = 70;
 export const tileWidth = 100;
 
-export interface squareInfo {
+export interface SquareInfo {
     pieceType?: string;
     isWhite?: boolean;
 }
 
+export function cloneGrid(grid: any[][]) {
+    const newGrid = [...grid];
+    newGrid.forEach((row, i) => (newGrid[i] = [...row]));
+    return newGrid;
+}
+
 export default function Home() {
-    const [boardMap, setBoardMap] = useState([] as squareInfo[][]);
+    const [boardMap, setBoardMap] = useState([] as SquareInfo[][]);
     const backRank = ["R", "N", "B", "Q", "K", "B", "N", "R"];
     const [moveMap, setMoveMap] = useState([] as boolean[][]);
 
     useEffect(() => {
         // Initialise boardMap and moveMap
-        let boardMap = [] as squareInfo[][];
+        let boardMap = [] as SquareInfo[][];
         let moveMap = [] as boolean[][];
         for (let i = 0; i < 8; i++) {
             boardMap.push([]);

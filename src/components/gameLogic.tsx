@@ -1,9 +1,7 @@
-import ValidMoves from "./validMoves";
 import { useEffect, useState } from "react";
-import { squareInfo } from "../home";
+import { cloneGrid, SquareInfo } from "../home";
+import ValidMoves from "./validMoves";
 import PromotePopup from "./promotePopup";
-
-// Add queening then checks
 
 export function emptyMoveMap() {
     let array = [] as boolean[][];
@@ -30,8 +28,8 @@ export default function GameLogic({
 }: {
     moveMap: boolean[][];
     setMoveMap: (value: boolean[][]) => void;
-    boardMap: squareInfo[][];
-    setBoardMap: (value: squareInfo[][]) => void;
+    boardMap: SquareInfo[][];
+    setBoardMap: (value: SquareInfo[][]) => void;
 }) {
     const [clickedSquare, setClickedSquare] = useState([] as number[]);
     const [isWhitesTurn, setIsWhitesTurn] = useState(true);
@@ -45,6 +43,18 @@ export default function GameLogic({
     });
     const [promotion, setPromotion] = useState({} as Promotion);
 
+    // Debug king in check:
+    useEffect(() => {
+        if (boardMap.length > 0) {
+            if (kingIsInCheck(true, boardMap)) {
+                console.log("WHITE KING IN CHECK");
+            }
+            if (kingIsInCheck(false, boardMap)) {
+                console.log("BLACK KING IS IN CHECK");
+            }
+        }
+    }, [boardMap]);
+
     // Handle click of any square
     useEffect(() => {
         console.log(clickedSquare);
@@ -52,40 +62,53 @@ export default function GameLogic({
         if (boardMap.length > 0) {
             const pieceClicked = boardMap[clickedSquare[0]][clickedSquare[1]];
             if (pieceClicked.isWhite == isWhitesTurn) {
-                calculateValidMoves(pieceClicked, clickedSquare);
+                setMoveMap(calculateValidMoves(clickedSquare, boardMap, false));
             } else {
-                movePiece();
+                if (moveMap[clickedSquare[0]][clickedSquare[1]]) {
+                    setBoardMap(
+                        movePiece(clickedSquare, boardMap, false) || [[]]
+                    );
+                    setMoveMap(emptyMoveMap());
+                    setIsWhitesTurn(!isWhitesTurn);
+                }
             }
         }
     }, [clickedSquare]);
 
     // Handle turn if promotion
     useEffect(() => {
-        if (promotion.promotion != null && promotion.at) {
+        if (promotion.promotion != null && promotion.at != null) {
             if (!promotion.promotion) {
                 if (isWhitesTurn) {
                     boardMap[promotion.at][0] = {
                         pieceType: promotion.piece,
                         isWhite: isWhitesTurn,
                     };
-                    boardMap[promotion.at][1] = {};
+                    boardMap[clickedSquare[2]][clickedSquare[3]] = {};
                 } else {
                     boardMap[promotion.at][7] = {
                         pieceType: promotion.piece,
                         isWhite: isWhitesTurn,
                     };
-                    boardMap[promotion.at][6] = {};
+                    boardMap[clickedSquare[2]][clickedSquare[3]] = {};
                 }
-                setBoardMap(boardMap.slice());
+                setBoardMap(cloneGrid(boardMap));
                 setMoveMap(emptyMoveMap());
                 setIsWhitesTurn(!isWhitesTurn);
+            } else {
+                promotion.promotion = false;
             }
         }
     }, [promotion]);
 
-    function movePiece() {
-        if (moveMap[clickedSquare[0]][clickedSquare[1]]) {
-            // Set if rook or king moved
+    function movePiece(
+        clickedSquare: number[],
+        boardToMove: SquareInfo[][],
+        phantomMove: boolean
+    ) {
+        let board = cloneGrid(boardToMove);
+        // Set if rook or king moved
+        if (!phantomMove) {
             if (clickedSquare[2] == 0 && clickedSquare[3] == 7) {
                 whiteRooksMoved[0] = true;
                 setWhiteRooksMoved(whiteRooksMoved.slice());
@@ -99,27 +122,25 @@ export default function GameLogic({
                 blackRooksMoved[1] = true;
                 setBlackRooksMoved(blackRooksMoved.slice());
             } else if (
-                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "K"
+                board[clickedSquare[2]][clickedSquare[3]].pieceType == "K"
             ) {
                 // Castling
                 if (clickedSquare[2] - clickedSquare[0] == 2) {
-                    boardMap[3][clickedSquare[1]] =
-                        boardMap[0][clickedSquare[1]];
-                    boardMap[0][clickedSquare[1]] = {};
+                    board[3][clickedSquare[1]] = board[0][clickedSquare[1]];
+                    board[0][clickedSquare[1]] = {};
                 } else if (clickedSquare[2] - clickedSquare[0] == -2) {
-                    boardMap[5][clickedSquare[1]] =
-                        boardMap[7][clickedSquare[1]];
-                    boardMap[7][clickedSquare[1]] = {};
+                    board[5][clickedSquare[1]] = board[7][clickedSquare[1]];
+                    board[7][clickedSquare[1]] = {};
                 }
                 // King has moved
-                if (boardMap[clickedSquare[2]][clickedSquare[3]].isWhite) {
+                if (board[clickedSquare[2]][clickedSquare[3]].isWhite) {
                     setWhiteKingHasMoved(true);
                 } else {
                     setBlackKingHasMoved(true);
                 }
             }
             // Set passant and promote
-            if (boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P") {
+            if (board[clickedSquare[2]][clickedSquare[3]].pieceType == "P") {
                 if (Math.abs(clickedSquare[1] - clickedSquare[3]) == 2) {
                     setPassant({ passantable: true, at: clickedSquare[0] });
                 } else {
@@ -127,31 +148,40 @@ export default function GameLogic({
                 }
                 if (clickedSquare[1] == 0 || clickedSquare[1] == 7) {
                     setPromotion({ promotion: true, at: clickedSquare[0] });
-                    return;
+                    return [];
                 }
             }
-            // Passant
-            if (
-                boardMap[clickedSquare[2]][clickedSquare[3]].pieceType == "P" &&
-                Math.abs(clickedSquare[1] - clickedSquare[3]) == 1 &&
-                Math.abs(clickedSquare[0] - clickedSquare[2]) == 1
-            ) {
-                if (passant.passantable && passant.at == clickedSquare[0]) {
-                    boardMap[clickedSquare[0]][clickedSquare[3]] = {};
-                }
-            }
-            // Standard piece move/take
-            boardMap[clickedSquare[0]][clickedSquare[1]] =
-                boardMap[clickedSquare[2]][clickedSquare[3]];
-            boardMap[clickedSquare[2]][clickedSquare[3]] = {};
-            setBoardMap(boardMap.slice());
-            setMoveMap(emptyMoveMap());
-            setIsWhitesTurn(!isWhitesTurn);
         }
+        // Passant
+        if (
+            board[clickedSquare[2]][clickedSquare[3]].pieceType == "P" &&
+            Math.abs(clickedSquare[1] - clickedSquare[3]) == 1 &&
+            Math.abs(clickedSquare[0] - clickedSquare[2]) == 1
+        ) {
+            if (passant.passantable && passant.at == clickedSquare[0]) {
+                if (
+                    (isWhitesTurn && clickedSquare[1] == 2) ||
+                    (!isWhitesTurn && clickedSquare[1] == 5)
+                ) {
+                    board[clickedSquare[0]][clickedSquare[3]] = {};
+                    console.log(clickedSquare[0], clickedSquare[3]);
+                }
+            }
+        }
+        // Standard piece move/take
+        board[clickedSquare[0]][clickedSquare[1]] =
+            board[clickedSquare[2]][clickedSquare[3]];
+        board[clickedSquare[2]][clickedSquare[3]] = {};
+        return cloneGrid(board);
     }
 
-    function calculateValidMoves(piece: squareInfo, square: number[]) {
+    function calculateValidMoves(
+        square: number[],
+        boardToCheck: SquareInfo[][],
+        immediate: boolean
+    ) {
         let moveMap = emptyMoveMap();
+        let board = cloneGrid(boardToCheck);
         const diagonals = [
             [-1, -1],
             [-1, 1],
@@ -176,7 +206,7 @@ export default function GameLogic({
                     square[1] + i * dir[1] >= 0
                 ) {
                     if (
-                        boardMap[square[0] + i * dir[0]][square[1] + i * dir[1]]
+                        board[square[0] + i * dir[0]][square[1] + i * dir[1]]
                             .pieceType == null
                     ) {
                         moveMap[square[0] + i * dir[0]][
@@ -184,9 +214,9 @@ export default function GameLogic({
                         ] = true;
                     } else {
                         if (
-                            boardMap[square[0] + i * dir[0]][
+                            board[square[0] + i * dir[0]][
                                 square[1] + i * dir[1]
-                            ].isWhite != isWhitesTurn
+                            ].isWhite != board[square[0]][square[1]].isWhite
                         ) {
                             moveMap[square[0] + i * dir[0]][
                                 square[1] + i * dir[1]
@@ -201,15 +231,15 @@ export default function GameLogic({
             }
         };
 
-        switch (piece.pieceType) {
+        switch (board[square[0]][square[1]].pieceType) {
             case "P":
-                if (piece.isWhite) {
+                if (board[square[0]][square[1]].isWhite) {
                     if (square[1] - 1 >= 0) {
-                        if (!boardMap[square[0]][square[1] - 1].pieceType) {
+                        if (!board[square[0]][square[1] - 1].pieceType) {
                             moveMap[square[0]][square[1] - 1] = true;
                             if (square[1] - 2 >= 0) {
                                 if (
-                                    !boardMap[square[0]][square[1] - 2]
+                                    !board[square[0]][square[1] - 2]
                                         .pieceType &&
                                     square[1] == 6
                                 ) {
@@ -220,16 +250,16 @@ export default function GameLogic({
                     }
                     if (square[0] - 1 >= 0 && square[1] - 1 >= 0) {
                         if (
-                            boardMap[square[0] - 1][square[1] - 1].pieceType &&
-                            !boardMap[square[0] - 1][square[1] - 1].isWhite
+                            board[square[0] - 1][square[1] - 1].pieceType &&
+                            !board[square[0] - 1][square[1] - 1].isWhite
                         ) {
                             moveMap[square[0] - 1][square[1] - 1] = true;
                         }
                     }
                     if (square[0] + 1 < 8 && square[1] - 1 >= 0) {
                         if (
-                            boardMap[square[0] + 1][square[1] - 1].pieceType &&
-                            !boardMap[square[0] + 1][square[1] - 1].isWhite
+                            board[square[0] + 1][square[1] - 1].pieceType &&
+                            !board[square[0] + 1][square[1] - 1].isWhite
                         ) {
                             moveMap[square[0] + 1][square[1] - 1] = true;
                         }
@@ -243,11 +273,11 @@ export default function GameLogic({
                     }
                 } else {
                     if (square[1] + 1 < 8) {
-                        if (!boardMap[square[0]][square[1] + 1].pieceType) {
+                        if (!board[square[0]][square[1] + 1].pieceType) {
                             moveMap[square[0]][square[1] + 1] = true;
                             if (square[1] + 2 < 8) {
                                 if (
-                                    !boardMap[square[0]][square[1] + 2]
+                                    !board[square[0]][square[1] + 2]
                                         .pieceType &&
                                     square[1] == 1
                                 ) {
@@ -258,16 +288,16 @@ export default function GameLogic({
                     }
                     if (square[0] - 1 >= 0 && square[1] + 1 < 8) {
                         if (
-                            boardMap[square[0] - 1][square[1] + 1].pieceType &&
-                            boardMap[square[0] - 1][square[1] + 1].isWhite
+                            board[square[0] - 1][square[1] + 1].pieceType &&
+                            board[square[0] - 1][square[1] + 1].isWhite
                         ) {
                             moveMap[square[0] - 1][square[1] + 1] = true;
                         }
                     }
                     if (square[0] + 1 < 8 && square[1] + 1 < 8) {
                         if (
-                            boardMap[square[0] + 1][square[1] + 1].pieceType &&
-                            boardMap[square[0] + 1][square[1] + 1].isWhite
+                            board[square[0] + 1][square[1] + 1].pieceType &&
+                            board[square[0] + 1][square[1] + 1].isWhite
                         ) {
                             moveMap[square[0] + 1][square[1] + 1] = true;
                         }
@@ -299,10 +329,10 @@ export default function GameLogic({
                         square[1] + move[1] >= 0
                     ) {
                         if (
-                            boardMap[square[0] + move[0]][square[1] + move[1]]
+                            board[square[0] + move[0]][square[1] + move[1]]
                                 .pieceType == null ||
-                            boardMap[square[0] + move[0]][square[1] + move[1]]
-                                .isWhite != isWhitesTurn
+                            board[square[0] + move[0]][square[1] + move[1]]
+                                .isWhite != board[square[0]][square[1]].isWhite
                         ) {
                             moveMap[square[0] + move[0]][square[1] + move[1]] =
                                 true;
@@ -328,14 +358,14 @@ export default function GameLogic({
                         square[1] + dir[1] >= 0
                     ) {
                         if (
-                            boardMap[square[0] + dir[0]][square[1] + dir[1]]
+                            board[square[0] + dir[0]][square[1] + dir[1]]
                                 .pieceType == null
                         ) {
                             moveMap[square[0] + dir[0]][square[1] + dir[1]] =
                                 true;
                         } else if (
-                            boardMap[square[0] + dir[0]][square[1] + dir[1]]
-                                .isWhite != isWhitesTurn
+                            board[square[0] + dir[0]][square[1] + dir[1]]
+                                .isWhite != board[square[0]][square[1]].isWhite
                         ) {
                             moveMap[square[0] + dir[0]][square[1] + dir[1]] =
                                 true;
@@ -346,16 +376,16 @@ export default function GameLogic({
                     if (!whiteKingHasMoved) {
                         if (
                             !whiteRooksMoved[0] &&
-                            !boardMap[1][7].pieceType &&
-                            !boardMap[2][7].pieceType &&
-                            !boardMap[3][7].pieceType
+                            !board[1][7].pieceType &&
+                            !board[2][7].pieceType &&
+                            !board[3][7].pieceType
                         ) {
                             moveMap[2][7] = true;
                         }
                         if (
                             !whiteRooksMoved[1] &&
-                            !boardMap[5][7].pieceType &&
-                            !boardMap[6][7].pieceType
+                            !board[5][7].pieceType &&
+                            !board[6][7].pieceType
                         ) {
                             moveMap[6][7] = true;
                         }
@@ -364,16 +394,16 @@ export default function GameLogic({
                     if (!blackKingHasMoved) {
                         if (
                             !blackRooksMoved[0] &&
-                            !boardMap[1][0].pieceType &&
-                            !boardMap[2][0].pieceType &&
-                            !boardMap[3][0].pieceType
+                            !board[1][0].pieceType &&
+                            !board[2][0].pieceType &&
+                            !board[3][0].pieceType
                         ) {
                             moveMap[2][0] = true;
                         }
                         if (
                             !blackRooksMoved[1] &&
-                            !boardMap[5][0].pieceType &&
-                            !boardMap[6][0].pieceType
+                            !board[5][0].pieceType &&
+                            !board[6][0].pieceType
                         ) {
                             moveMap[6][0] = true;
                         }
@@ -383,7 +413,73 @@ export default function GameLogic({
             default:
                 break;
         }
-        setMoveMap(moveMap.slice());
+        if (!immediate) {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    if (moveMap[i][j] == true) {
+                        if (
+                            kingIsInCheck(
+                                isWhitesTurn,
+                                movePiece(
+                                    [i, j, square[0], square[1]],
+                                    board,
+                                    true
+                                ) || [[]]
+                            )
+                        ) {
+                            console.log("HERE", [i, j]);
+                            moveMap[i][j] = false;
+                        }
+                    }
+                }
+            }
+        }
+        // Cannot castle through check
+        if (board[square[0]][square[1]].pieceType == "K") {
+            if (moveMap[2][7] && !moveMap[3][7]) {
+                moveMap[2][7] = false;
+            }
+            if (moveMap[6][7] && !moveMap[5][7]) {
+                moveMap[6][7] = false;
+            }
+            if (moveMap[2][0] && !moveMap[3][0]) {
+                moveMap[2][0] = false;
+            }
+            if (moveMap[6][0] && !moveMap[5][0]) {
+                moveMap[6][0] = false;
+            }
+        }
+        return cloneGrid(moveMap);
+    }
+
+    function kingIsInCheck(kingIsWhite: boolean, boardToCheck: SquareInfo[][]) {
+        let board = cloneGrid(boardToCheck);
+        // Get king's position
+        let kingPos = [] as number[];
+        iLoop: for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (
+                    board[i][j].pieceType == "K" &&
+                    board[i][j].isWhite == kingIsWhite
+                ) {
+                    kingPos = [i, j];
+                    break iLoop;
+                }
+            }
+        }
+        console.log(board);
+        // Check oppositions pieces if they threaten the king
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                if (board[i][j].isWhite == !kingIsWhite) {
+                    const moveSet = calculateValidMoves([i, j], board, true);
+                    if (moveSet[kingPos[0]][kingPos[1]]) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     return (
