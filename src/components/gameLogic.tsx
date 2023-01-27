@@ -30,12 +30,14 @@ export default function GameLogic({
     setMoveMap,
     boardMap,
     setBoardMap,
+    isACheck,
     setIsACheck,
 }: {
     moveMap: boolean[][];
     setMoveMap: (value: boolean[][]) => void;
     boardMap: SquareInfo[][];
     setBoardMap: (value: SquareInfo[][]) => void;
+    isACheck: { isACheck: boolean; isWhite: boolean };
     setIsACheck: (value: { isACheck: boolean; isWhite: boolean }) => void;
 }) {
     const [clickedSquare, setClickedSquare] = useState([] as number[]);
@@ -59,6 +61,7 @@ export default function GameLogic({
             if (kingIsInCheckMate(isWhitesTurn, boardMap)) {
                 setPlayerWins({ winner: true, winnerIsWhite: !isWhitesTurn });
             }
+            // For sound playing on check
             if (kingIsInCheck(true, boardMap)) {
                 setIsACheck({ isACheck: true, isWhite: true });
             } else if (kingIsInCheck(false, boardMap)) {

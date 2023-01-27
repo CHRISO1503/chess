@@ -86,7 +86,7 @@ export default function Home() {
                     <Board />
                 </div>
                 <div style={{ position: "absolute" }}>
-                    <Pieces boardMap={boardMap} isACheck={isACheck} />
+                    <Pieces boardMap={boardMap} />
                 </div>
                 <div style={{ position: "absolute" }}>
                     <GameLogic
@@ -94,6 +94,7 @@ export default function Home() {
                         setMoveMap={setMoveMap}
                         boardMap={boardMap}
                         setBoardMap={setBoardMap}
+                        isACheck={isACheck}
                         setIsACheck={setIsACheck}
                     />
                 </div>
