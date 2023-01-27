@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import Board from "./components/board";
 import GameLogic from "./components/gameLogic";
 import Pieces from "./components/pieces";
-import ValidMoves from "./components/validMoves";
 
 export const pieceWidth = 70;
 export const tileWidth = 100;
@@ -22,6 +21,10 @@ export default function Home() {
     const [boardMap, setBoardMap] = useState([] as SquareInfo[][]);
     const backRank = ["R", "N", "B", "Q", "K", "B", "N", "R"];
     const [moveMap, setMoveMap] = useState([] as boolean[][]);
+    const [isACheck, setIsACheck] = useState({
+        isACheck: false,
+        isWhite: false,
+    });
 
     useEffect(() => {
         // Initialise boardMap and moveMap
@@ -83,7 +86,7 @@ export default function Home() {
                     <Board />
                 </div>
                 <div style={{ position: "absolute" }}>
-                    <Pieces boardMap={boardMap} />
+                    <Pieces boardMap={boardMap} isACheck={isACheck} />
                 </div>
                 <div style={{ position: "absolute" }}>
                     <GameLogic
@@ -91,6 +94,7 @@ export default function Home() {
                         setMoveMap={setMoveMap}
                         boardMap={boardMap}
                         setBoardMap={setBoardMap}
+                        setIsACheck={setIsACheck}
                     />
                 </div>
             </div>

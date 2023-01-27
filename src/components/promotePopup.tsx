@@ -16,7 +16,7 @@ export default function PromotePopup({
     const pieces = ["N", "B", "R", "Q"];
 
     useEffect(() => {
-        if (isWhitesTurn) {
+        if (!isWhitesTurn) {
             setPromotionAssets(whiteAssets.slice(1, 5));
         } else {
             setPromotionAssets(blackAssets.slice(1, 5));
