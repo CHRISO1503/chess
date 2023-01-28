@@ -2,7 +2,10 @@ import { useEffect, useState } from "react";
 import Board from "./components/board";
 import GameLogic from "./components/gameLogic";
 import Pieces from "./components/pieces";
+import socketIOClient from "socket.io-client";
+import { deployed } from "./appSettings";
 
+const ENDPOINT = deployed ? "" : "http://localhost:5000";
 export const pieceWidth = 70;
 export const tileWidth = 100;
 
@@ -25,6 +28,12 @@ export default function Home() {
         isACheck: false,
         isWhite: false,
     });
+    const [response, setResponse] = useState("");
+
+    useEffect(() => {
+        const socket = socketIOClient(ENDPOINT);
+        socket.on("connect", () => console.log("Connected to server"));
+    }, []);
 
     useEffect(() => {
         // Initialise boardMap and moveMap
