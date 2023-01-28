@@ -77,11 +77,18 @@ export default function Home() {
                     fontSize: "4em",
                     marginBottom: "10px",
                     marginTop: "10px",
+                    minWidth: tileWidth * 8,
                 }}
             >
                 Chess
             </h1>
-            <div style={{ display: "flex", justifyContent: "center" }}>
+            <div
+                style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    minWidth: tileWidth * 8,
+                }}
+            >
                 <div style={{ position: "absolute" }}>
                     <Board />
                 </div>
