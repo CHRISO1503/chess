@@ -1,4 +1,4 @@
-import { SquareInfo } from "../home";
+import { SquareInfo } from "./game";
 import Piece from "./piece";
 
 export default function Pieces({ boardMap }: { boardMap: SquareInfo[][] }) {

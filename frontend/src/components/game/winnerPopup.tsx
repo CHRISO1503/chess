@@ -1,4 +1,4 @@
-import { tileWidth } from "../home";
+import { tileWidth } from "./game";
 import { Winner } from "./gameLogic";
 
 export default function WinnerPopup({ playerWins }: { playerWins: Winner }) {

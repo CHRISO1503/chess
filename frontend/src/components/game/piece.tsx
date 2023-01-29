@@ -1,16 +1,16 @@
-import whitePawn from "../assets/pieces/w_pawn_svg_NoShadow.svg";
-import whiteKnight from "../assets/pieces/w_knight_svg_NoShadow.svg";
-import whiteBishop from "../assets/pieces/w_bishop_svg_NoShadow.svg";
-import whiteRook from "../assets/pieces/w_rook_svg_NoShadow.svg";
-import whiteQueen from "../assets/pieces/w_queen_svg_NoShadow.svg";
-import whiteKing from "../assets/pieces/w_king_svg_NoShadow.svg";
-import blackPawn from "../assets/pieces/b_pawn_svg_NoShadow.svg";
-import blackKnight from "../assets/pieces/b_knight_svg_NoShadow.svg";
-import blackBishop from "../assets/pieces/b_bishop_svg_NoShadow.svg";
-import blackRook from "../assets/pieces/b_rook_svg_NoShadow.svg";
-import blackQueen from "../assets/pieces/b_queen_svg_NoShadow.svg";
-import blackKing from "../assets/pieces/b_king_svg_NoShadow.svg";
-import { pieceWidth, SquareInfo, tileWidth } from "../home";
+import whitePawn from "../../assets/pieces/w_pawn_svg_NoShadow.svg";
+import whiteKnight from "../../assets/pieces/w_knight_svg_NoShadow.svg";
+import whiteBishop from "../../assets/pieces/w_bishop_svg_NoShadow.svg";
+import whiteRook from "../../assets/pieces/w_rook_svg_NoShadow.svg";
+import whiteQueen from "../../assets/pieces/w_queen_svg_NoShadow.svg";
+import whiteKing from "../../assets/pieces/w_king_svg_NoShadow.svg";
+import blackPawn from "../../assets/pieces/b_pawn_svg_NoShadow.svg";
+import blackKnight from "../../assets/pieces/b_knight_svg_NoShadow.svg";
+import blackBishop from "../../assets/pieces/b_bishop_svg_NoShadow.svg";
+import blackRook from "../../assets/pieces/b_rook_svg_NoShadow.svg";
+import blackQueen from "../../assets/pieces/b_queen_svg_NoShadow.svg";
+import blackKing from "../../assets/pieces/b_king_svg_NoShadow.svg";
+import { pieceWidth, SquareInfo, tileWidth } from "./game";
 
 export const sizeMultipliers = [1, 1.1, 1.2, 1.05, 1.3, 1.25];
 export const whiteAssets = [

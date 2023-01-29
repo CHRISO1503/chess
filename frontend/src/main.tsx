@@ -6,7 +6,5 @@ import Home from "./home";
 const router = createBrowserRouter([{ path: "/", element: <Home /> }]);
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <React.StrictMode>
-        <RouterProvider router={router} />
-    </React.StrictMode>
+    <RouterProvider router={router} />
 );

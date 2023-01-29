@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { pieceWidth, tileWidth } from "../home";
+import { pieceWidth, tileWidth } from "./game";
 import { Promotion } from "./gameLogic";
 import { sizeMultipliers, whiteAssets, blackAssets } from "./piece";
 
@@ -16,7 +16,7 @@ export default function PromotePopup({
     const pieces = ["N", "B", "R", "Q"];
 
     useEffect(() => {
-        if (!isWhitesTurn) {
+        if (isWhitesTurn) {
             setPromotionAssets(whiteAssets.slice(1, 5));
         } else {
             setPromotionAssets(blackAssets.slice(1, 5));
@@ -25,7 +25,7 @@ export default function PromotePopup({
 
     return (
         <>
-            {promotion ? (
+            {promotion?.promotion ? (
                 <div
                     style={{
                         position: "absolute",

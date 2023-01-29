@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { cloneGrid, SquareInfo } from "../home";
+import { cloneGrid, SquareInfo } from "./game";
 import ValidMoves from "./validMoves";
 import PromotePopup from "./promotePopup";
 import WinnerPopup from "./winnerPopup";
@@ -529,15 +529,11 @@ export default function GameLogic({
                 clickedSquare={clickedSquare}
                 setClickedSquare={setClickedSquare}
             />
-            {promotion.promotion ? (
-                <PromotePopup
-                    promotion={promotion}
-                    isWhitesTurn={isWhitesTurn}
-                    setPromotion={setPromotion}
-                />
-            ) : (
-                <></>
-            )}
+            <PromotePopup
+                promotion={promotion}
+                isWhitesTurn={isWhitesTurn}
+                setPromotion={setPromotion}
+            />
             {playerWins.winner ? (
                 <WinnerPopup playerWins={playerWins} />
             ) : (

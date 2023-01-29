@@ -1,0 +1,16 @@
+button.home-menu {
+    min-width: 20vw;
+    min-height: 5vh;
+    margin: 3vh;
+    font-size: 2em;
+    border-radius: 2px;
+}
+
+button.home-menu:hover {
+    cursor: pointer;
+    background-color: grey;
+}
+
+.blur-content {
+    filter: blur(2px);
+}

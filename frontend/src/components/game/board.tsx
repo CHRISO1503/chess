@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { tileWidth } from "../home";
+import { tileWidth } from "./game";
 
 export default function Board() {
     const [tileMap, setTileMap] = useState([] as number[][]);

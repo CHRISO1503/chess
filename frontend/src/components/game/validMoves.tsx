@@ -1,4 +1,4 @@
-import { tileWidth } from "../home";
+import { tileWidth } from "./game";
 
 export default function ValidMoves({
     moveMap,
