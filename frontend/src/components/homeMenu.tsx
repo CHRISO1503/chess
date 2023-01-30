@@ -6,12 +6,10 @@ import {
     tileWidth,
 } from "./game/game";
 import Pieces from "./game/pieces";
+import { useNavigate } from "react-router-dom";
 
-export default function HomeMenu({
-    setGameMode,
-}: {
-    setGameMode: (value: string) => void;
-}) {
+export default function HomeMenu() {
+    const navigate = useNavigate();
     return (
         <div
             style={{
@@ -40,13 +38,13 @@ export default function HomeMenu({
             >
                 <button
                     className="home-menu"
-                    onClick={() => setGameMode("offline")}
+                    onClick={() => navigate("/overtheboard")}
                 >
                     Over the board
                 </button>
                 <button
                     className="home-menu"
-                    onClick={() => setGameMode("online")}
+                    onClick={() => navigate("/online")}
                 >
                     Online
                 </button>

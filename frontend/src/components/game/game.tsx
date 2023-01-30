@@ -2,10 +2,7 @@ import { useEffect, useState } from "react";
 import Board from "./board";
 import GameLogic from "./gameLogic";
 import Pieces from "./pieces";
-import socketIOClient from "socket.io-client";
-import { deployed } from "../../appSettings";
 
-const ENDPOINT = deployed ? "" : "http://localhost:5000";
 export const pieceWidth = 70;
 export const tileWidth = 100;
 export const backRank = ["R", "N", "B", "Q", "K", "B", "N", "R"];
@@ -68,20 +65,6 @@ export default function Game({ gameMode }: { gameMode: string }) {
         isACheck: false,
         isWhite: false,
     });
-    const [response, setResponse] = useState("");
-    const [playerNumber, setPlayerNumber] = useState(-1);
-    const [gameNumber, setGameNumber] = useState(-1);
-
-    useEffect(() => {
-        if (playerNumber == -1) {
-            const socket = socketIOClient(ENDPOINT);
-            socket.on("connect", () => console.log("Connected to server"));
-            socket.on("player-number", (playerNumber) => {
-                setPlayerNumber(playerNumber);
-                console.log(playerNumber);
-            });
-        }
-    }, []);
 
     useEffect(() => {
         setMoveMap(cloneGrid(initialiseBoardMapAndMoveMap().moveMap));

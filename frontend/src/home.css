@@ -14,3 +14,7 @@ button.home-menu:hover {
 .blur-content {
     filter: blur(2px);
 }
+
+.navigate:hover {
+    cursor: pointer;
+}
