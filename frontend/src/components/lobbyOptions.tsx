@@ -1,14 +1,15 @@
 import { useState } from "react";
-import { Lobby } from "../routes/online";
+import { Socket } from "socket.io-client";
+import { Lobby } from "../routes/lobbyMenu";
 import { initialiseBoardMapAndMoveMap } from "./game/game";
 
 export default function LobbyOptions({
     setNewLobby,
-    playerNumber,
+    socket,
     setJoinLobby,
 }: {
     setNewLobby: (value: Lobby) => void;
-    playerNumber: number;
+    socket: Socket;
     setJoinLobby: (value: Lobby) => void;
 }) {
     const [usePassword, setUsePassword] = useState(false);
@@ -17,7 +18,7 @@ export default function LobbyOptions({
 
     function handleSubmit() {
         const lobby = {
-            id: playerNumber,
+            id: socket.id,
             name: lobbyName,
             password: lobbyPassword != "" ? lobbyPassword : undefined,
             boardMap: initialiseBoardMapAndMoveMap().boardMap,

@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { Lobby } from "../routes/online";
+import { Lobby } from "../routes/lobbyMenu";
 
 export default function LobbyList({
     lobbyList,
@@ -23,7 +23,6 @@ export default function LobbyList({
                 <table>
                     <thead>
                         <tr>
-                            <th>ID</th>
                             <th>Name</th>
                             <th>Password?</th>
                         </tr>
@@ -31,7 +30,6 @@ export default function LobbyList({
                     <tbody>
                         {lobbyList.map((lobby, i) => (
                             <tr key={i} onClick={() => setJoinLobby(lobby)}>
-                                <td>{lobby.id}</td>
                                 <td>{lobby.name}</td>
                                 <td>{lobby.password ? "Y" : "N"}</td>
                             </tr>

@@ -13,6 +13,7 @@ export default function LobbyPasswordPopup({
     function handleSubmit() {
         if (passwordInput) {
             enterLobby();
+            setRequirePassword(false);
         } else {
             setErrorMessage("Password incorrect");
         }

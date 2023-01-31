@@ -15,20 +15,17 @@ interface SquareInfo {
 }
 
 interface Game {
-    id: number;
+    id: string;
     name: string;
     password?: string;
     boardMap?: SquareInfo[][];
+    opponentId?: string;
 }
 
 let games = [] as Game[];
-let playerNumber = 0;
 
 io.on("connection", (socket: Socket) => {
-    socket.emit("player-number", playerNumber);
-    console.log(`connection with number ${playerNumber}`);
     socket.emit("set-lobbies", games);
-    playerNumber += 1;
     socket.on("create-lobby", (game) => {
         if (game.id == -1) {
             return;
@@ -41,8 +38,25 @@ io.on("connection", (socket: Socket) => {
         socket.emit("set-lobbies", games);
     });
     socket.on("disconnect", () => {
+        removeGame(socket);
         console.log("Client disconnected");
     });
+    socket.on("join-lobby", (lobbyId, playerNumber) => {
+        let index = games.findIndex((x) => x.id == lobbyId);
+        if (index != -1) {
+            games[index].opponentId = playerNumber;
+            // Let host and current client (joiner) know lobby is created
+            socket.to(games[index].id).emit("created-lobby", games[index]);
+            socket.emit("created-lobby", games[index]);
+        }
+    });
 });
+
+function removeGame(socket: Socket) {
+    let index = games.findIndex((x) => x.id == socket.id);
+    if (index != -1) {
+        games.splice(index, 1);
+    }
+}
 
 httpServer.listen(PORT);

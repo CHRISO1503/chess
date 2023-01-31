@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./routes/home";
 import Online from "./routes/online";
+import OnlineGame from "./routes/onlineGame";
 import OverTheBoard from "./routes/overTheBoard";
 
 const router = createBrowserRouter([
