@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import LobbyMenu, { Lobby } from "./lobbyMenu";
-import OnlineGame from "./onlineGame";
+import LobbyMenu, { Lobby } from "../components/lobbyMenu";
+import OnlineGame from "../components/onlineGame";
 import socketIOClient, { Socket } from "socket.io-client";
+import Header from "../components/header";
 
 export default function Online() {
     const [inGame, setInGame] = useState(false);
@@ -16,15 +17,14 @@ export default function Online() {
 
     return (
         <>
-            {inGame ? (
-                <OnlineGame lobby={lobby} socket={socket} />
-            ) : (
-                <LobbyMenu
-                    socket={socket}
-                    setSocket={setSocket}
-                    setLobby={setLobby}
-                />
-            )}
+            <Header />
+            {inGame ? <OnlineGame lobby={lobby} socket={socket} /> : <></>}
+            <LobbyMenu
+                inGame={inGame}
+                socket={socket}
+                setSocket={setSocket}
+                setLobby={setLobby}
+            />
         </>
     );
 }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Socket } from "socket.io-client";
 import Board from "./board";
 import GameLogic from "./gameLogic";
 import Pieces from "./pieces";
@@ -16,6 +17,15 @@ export function cloneGrid(grid: any[][]) {
     const newGrid = [...grid];
     newGrid.forEach((row, i) => (newGrid[i] = [...row]));
     return newGrid;
+}
+
+// https://stackoverflow.com/questions/19333002/rotate-a-matrix-array-by-180-degrees
+export function flipBoard(grid: any[][]) {
+    grid = cloneGrid(grid);
+    grid.reverse().forEach(function (item) {
+        item.reverse();
+    });
+    return cloneGrid(grid);
 }
 
 export function initialiseBoardMapAndMoveMap() {
@@ -58,19 +68,41 @@ export function initialiseBoardMapAndMoveMap() {
     return { moveMap: moveMap, boardMap: boardMap };
 }
 
-export default function Game({ gameMode }: { gameMode: string }) {
-    const [boardMap, setBoardMap] = useState([] as SquareInfo[][]);
-    const [moveMap, setMoveMap] = useState([] as boolean[][]);
-    const [isACheck, setIsACheck] = useState({
-        isACheck: false,
-        isWhite: false,
-    });
-
-    useEffect(() => {
-        setMoveMap(cloneGrid(initialiseBoardMapAndMoveMap().moveMap));
-        setBoardMap(cloneGrid(initialiseBoardMapAndMoveMap().boardMap));
-    }, []);
-
+export default function Game({
+    boardFlipped,
+    boardMap,
+    setBoardMap,
+    moveMap,
+    setMoveMap,
+    playerIsWhite,
+    isWhitesTurn,
+    setIsWhitesTurn,
+    clickedSquare,
+    setClickedSquare,
+    kingsMoved,
+    setKingsMoved,
+    rooksMoved,
+    setRooksMoved,
+    passant,
+    setPassant,
+}: {
+    boardFlipped: boolean;
+    boardMap: SquareInfo[][];
+    setBoardMap: (value: SquareInfo[][]) => void;
+    moveMap: boolean[][];
+    setMoveMap: (value: boolean[][]) => void;
+    playerIsWhite?: boolean;
+    isWhitesTurn: boolean;
+    setIsWhitesTurn: (value: boolean) => void;
+    clickedSquare: number[];
+    setClickedSquare: (value: number[]) => void;
+    kingsMoved: boolean[];
+    setKingsMoved: (value: boolean[]) => void;
+    rooksMoved: boolean[][];
+    setRooksMoved: (value: boolean[][]) => void;
+    passant: { passantable: boolean; at: number };
+    setPassant: (value: { passantable: boolean; at: number }) => void;
+}) {
     return (
         <>
             <div
@@ -84,7 +116,9 @@ export default function Game({ gameMode }: { gameMode: string }) {
                     <Board />
                 </div>
                 <div style={{ position: "absolute" }}>
-                    <Pieces boardMap={boardMap} />
+                    <Pieces
+                        boardMap={boardFlipped ? flipBoard(boardMap) : boardMap}
+                    />
                 </div>
                 <div style={{ position: "absolute" }}>
                     <GameLogic
@@ -92,8 +126,18 @@ export default function Game({ gameMode }: { gameMode: string }) {
                         setMoveMap={setMoveMap}
                         boardMap={boardMap}
                         setBoardMap={setBoardMap}
-                        isACheck={isACheck}
-                        setIsACheck={setIsACheck}
+                        boardFlipped={boardFlipped}
+                        playerIsWhite={playerIsWhite}
+                        isWhitesTurn={isWhitesTurn}
+                        setIsWhitesTurn={setIsWhitesTurn}
+                        clickedSquare={clickedSquare}
+                        setClickedSquare={setClickedSquare}
+                        kingsMoved={kingsMoved}
+                        setKingsMoved={setKingsMoved}
+                        rooksMoved={rooksMoved}
+                        setRooksMoved={setRooksMoved}
+                        passant={passant}
+                        setPassant={setPassant}
                     />
                 </div>
             </div>

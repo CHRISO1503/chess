@@ -4,10 +4,14 @@ export default function ValidMoves({
     moveMap,
     clickedSquare,
     setClickedSquare,
+    boardFlipped,
+    moveAuthorized,
 }: {
     moveMap: boolean[][];
     clickedSquare: number[];
     setClickedSquare: (value: number[]) => void;
+    boardFlipped: boolean;
+    moveAuthorized: boolean;
 }) {
     return (
         <div style={{ display: "flex" }}>
@@ -23,8 +27,12 @@ export default function ValidMoves({
                                 height: tileWidth,
                             }}
                             onClick={() => {
-                                clickedSquare.unshift(i, j);
-                                setClickedSquare(clickedSquare.slice(0,4));
+                                if (moveAuthorized) {
+                                    boardFlipped
+                                        ? clickedSquare.unshift(7 - i, 7 - j)
+                                        : clickedSquare.unshift(i, j);
+                                    setClickedSquare(clickedSquare.slice(0, 4));
+                                }
                             }}
                         >
                             {cell ? (

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Socket } from "socket.io-client";
-import { Lobby } from "../routes/lobbyMenu";
+import { Lobby } from "./lobbyMenu";
 import { initialiseBoardMapAndMoveMap } from "./game/game";
 
 export default function LobbyOptions({

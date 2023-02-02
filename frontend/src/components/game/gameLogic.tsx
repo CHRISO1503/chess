@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { cloneGrid, SquareInfo } from "./game";
+import { cloneGrid, flipBoard, SquareInfo } from "./game";
 import ValidMoves from "./validMoves";
 import PromotePopup from "./promotePopup";
 import WinnerPopup from "./winnerPopup";
+import { Socket } from "socket.io-client";
 
 export function emptyMoveMap() {
     let array = [] as boolean[][];
@@ -30,30 +31,60 @@ export default function GameLogic({
     setMoveMap,
     boardMap,
     setBoardMap,
-    isACheck,
-    setIsACheck,
+    boardFlipped,
+    playerIsWhite,
+    isWhitesTurn,
+    setIsWhitesTurn,
+    clickedSquare,
+    setClickedSquare,
+    kingsMoved,
+    setKingsMoved,
+    rooksMoved,
+    setRooksMoved,
+    passant,
+    setPassant,
 }: {
     moveMap: boolean[][];
     setMoveMap: (value: boolean[][]) => void;
     boardMap: SquareInfo[][];
     setBoardMap: (value: SquareInfo[][]) => void;
-    isACheck: { isACheck: boolean; isWhite: boolean };
-    setIsACheck: (value: { isACheck: boolean; isWhite: boolean }) => void;
+    boardFlipped: boolean;
+    playerIsWhite?: boolean;
+    isWhitesTurn: boolean;
+    setIsWhitesTurn: (value: boolean) => void;
+    clickedSquare: number[];
+    setClickedSquare: (value: number[]) => void;
+    kingsMoved: boolean[];
+    setKingsMoved: (value: boolean[]) => void;
+    rooksMoved: boolean[][];
+    setRooksMoved: (value: boolean[][]) => void;
+    passant: { passantable: boolean; at: number };
+    setPassant: (value: { passantable: boolean; at: number }) => void;
 }) {
-    const [clickedSquare, setClickedSquare] = useState([] as number[]);
-    const [isWhitesTurn, setIsWhitesTurn] = useState(true);
-    const [whiteKingHasMoved, setWhiteKingHasMoved] = useState(false);
-    const [blackKingHasMoved, setBlackKingHasMoved] = useState(false);
-    const [whiteRooksMoved, setWhiteRooksMoved] = useState([false, false]);
-    const [blackRooksMoved, setBlackRooksMoved] = useState([false, false]);
-    const [passant, setPassant] = useState({
-        passantable: false,
-        at: 0,
-    });
     const [promotion, setPromotion] = useState({} as Promotion);
     const [playerWins, setPlayerWins] = useState({
         winner: false,
     } as Winner);
+    const [isACheck, setIsACheck] = useState({
+        isACheck: false,
+        isWhite: false,
+    });
+    const [moveAuthorized, setMoveAuthorized] = useState(true);
+
+    // Every render check if user can make inputs by whose turn it is:
+    useEffect(() => {
+        if (playerIsWhite != undefined) {
+            if (moveAuthorized == false) {
+                if (playerIsWhite == isWhitesTurn) {
+                    setMoveAuthorized(true);
+                }
+            } else {
+                if (playerIsWhite != isWhitesTurn) {
+                    setMoveAuthorized(false);
+                }
+            }
+        }
+    });
 
     // Set checks and checkmate:
     useEffect(() => {
@@ -130,17 +161,17 @@ export default function GameLogic({
         // Set if rook or king moved
         if (!phantomMove) {
             if (clickedSquare[2] == 0 && clickedSquare[3] == 7) {
-                whiteRooksMoved[0] = true;
-                setWhiteRooksMoved(whiteRooksMoved.slice());
+                rooksMoved[0][0] = true;
+                setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
-                whiteRooksMoved[1] = true;
-                setWhiteRooksMoved(whiteRooksMoved.slice());
+                rooksMoved[0][1] = true;
+                setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 0 && clickedSquare[3] == 0) {
-                blackRooksMoved[0] = true;
-                setBlackRooksMoved(blackRooksMoved.slice());
+                rooksMoved[1][0] = true;
+                setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
-                blackRooksMoved[1] = true;
-                setBlackRooksMoved(blackRooksMoved.slice());
+                rooksMoved[1][1] = true;
+                setRooksMoved(cloneGrid(rooksMoved));
             } else if (
                 board[clickedSquare[2]][clickedSquare[3]].pieceType == "K"
             ) {
@@ -154,9 +185,11 @@ export default function GameLogic({
                 }
                 // King has moved
                 if (board[clickedSquare[2]][clickedSquare[3]].isWhite) {
-                    setWhiteKingHasMoved(true);
+                    kingsMoved[0] = true;
+                    setKingsMoved(kingsMoved.slice());
                 } else {
-                    setBlackKingHasMoved(true);
+                    kingsMoved[1] = true;
+                    setKingsMoved(kingsMoved.slice());
                 }
             }
             // Set passant and promote
@@ -392,9 +425,9 @@ export default function GameLogic({
                     }
                 }
                 if (isWhitesTurn) {
-                    if (!whiteKingHasMoved) {
+                    if (!kingsMoved[0]) {
                         if (
-                            !whiteRooksMoved[0] &&
+                            !rooksMoved[0][0] &&
                             !board[1][7].pieceType &&
                             !board[2][7].pieceType &&
                             !board[3][7].pieceType
@@ -402,7 +435,7 @@ export default function GameLogic({
                             moveMap[2][7] = true;
                         }
                         if (
-                            !whiteRooksMoved[1] &&
+                            !rooksMoved[0][1] &&
                             !board[5][7].pieceType &&
                             !board[6][7].pieceType
                         ) {
@@ -410,9 +443,9 @@ export default function GameLogic({
                         }
                     }
                 } else {
-                    if (!blackKingHasMoved) {
+                    if (!kingsMoved[1]) {
                         if (
-                            !blackRooksMoved[0] &&
+                            !rooksMoved[1][0] &&
                             !board[1][0].pieceType &&
                             !board[2][0].pieceType &&
                             !board[3][0].pieceType
@@ -420,7 +453,7 @@ export default function GameLogic({
                             moveMap[2][0] = true;
                         }
                         if (
-                            !blackRooksMoved[1] &&
+                            !rooksMoved[1][1] &&
                             !board[5][0].pieceType &&
                             !board[6][0].pieceType
                         ) {
@@ -525,9 +558,11 @@ export default function GameLogic({
     return (
         <>
             <ValidMoves
-                moveMap={moveMap}
+                moveMap={boardFlipped ? flipBoard(moveMap) : moveMap}
                 clickedSquare={clickedSquare}
                 setClickedSquare={setClickedSquare}
+                boardFlipped={boardFlipped}
+                moveAuthorized={moveAuthorized}
             />
             <PromotePopup
                 promotion={promotion}

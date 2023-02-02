@@ -1,5 +1,5 @@
 import { Socket } from "socket.io-client";
-import { Lobby } from "../routes/lobbyMenu";
+import { Lobby } from "./lobbyMenu";
 
 export default function LobbyList({
     lobbyList,

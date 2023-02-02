@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import socketIOClient, { Socket } from "socket.io-client";
-import Header from "../components/header";
-import LobbyList from "../components/lobbyList";
-import LobbyOptions from "../components/lobbyOptions";
+import LobbyList from "./lobbyList";
+import LobbyOptions from "./lobbyOptions";
 import { deployed } from "../appSettings";
-import { SquareInfo } from "../components/game/game";
-import LobbyPasswordPopup from "../components/lobbyPasswordPopup";
-import AwaitingChallengerPopup from "../components/awaitingChallengerPopup";
+import { SquareInfo } from "./game/game";
+import LobbyPasswordPopup from "./lobbyPasswordPopup";
+import AwaitingChallengerPopup from "./awaitingChallengerPopup";
 
 export interface Lobby {
     id: string;
@@ -14,15 +13,18 @@ export interface Lobby {
     password?: string;
     boardMap?: SquareInfo[][];
     opponentId?: string;
+    hostIsWhite?: boolean;
 }
 
 const ENDPOINT = deployed ? "" : "http://localhost:5000";
 
 export default function LobbyMenu({
+    inGame,
     socket,
     setSocket,
     setLobby,
 }: {
+    inGame: boolean;
     socket: Socket;
     setSocket: (value: Socket) => void;
     setLobby: (value: Lobby) => void;
@@ -36,16 +38,17 @@ export default function LobbyMenu({
     const [lobbyList, setLobbyList] = useState([] as Lobby[]);
     const [requirePassword, setRequirePassword] = useState(false);
     const [awaitingChallenger, setAwaitingChallenger] = useState(false);
+    const [connected, setConnected] = useState(true);
 
     // Connect to server
     useEffect(() => {
         if (playerId == "") {
             const socket = socketIOClient(ENDPOINT);
             setPlayerId(socket.id);
-            socket.on("connect", () => console.log("Connected to server"));
+            socket.on("connect", () => setConnected(true));
+            socket.on("connect_error", () => setConnected(false));
             socket.on("set-lobbies", (lobbies) => {
                 setLobbyList(lobbies);
-                console.log(lobbies);
             });
             socket.on("created-lobby", (lobby) => {
                 setAwaitingChallenger(false);
@@ -62,7 +65,6 @@ export default function LobbyMenu({
             name: newLobby.name,
             password: newLobby.password,
         });
-        console.log(`creating lobby ${newLobby.id} with id ${socket.id}`);
     }, [newLobby]);
 
     // Join a lobby
@@ -77,7 +79,6 @@ export default function LobbyMenu({
     }, [joinLobby]);
 
     function enterLobby() {
-        console.log("Joining lobby", joinLobby);
         if (joinLobby.id == socket.id) {
             setAwaitingChallenger(true);
         } else {
@@ -87,38 +88,52 @@ export default function LobbyMenu({
 
     return (
         <>
-            <div
-                className={
-                    requirePassword || awaitingChallenger ? "blur-content" : ""
-                }
-            >
-                <Header />
-                <div style={{ display: "flex", justifyContent: "center" }}>
-                    <div style={{ width: "30vw" }}>
-                        <LobbyList
-                            lobbyList={lobbyList}
-                            socket={socket}
-                            setJoinLobby={setJoinLobby}
-                        />
+            {!inGame && connected ? (
+                <div>
+                    <div
+                        className={
+                            requirePassword || awaitingChallenger
+                                ? "blur-content"
+                                : ""
+                        }
+                    >
+                        <div
+                            style={{
+                                display: "flex",
+                                justifyContent: "center",
+                            }}
+                        >
+                            <div style={{ width: "30vw" }}>
+                                <LobbyList
+                                    lobbyList={lobbyList}
+                                    socket={socket}
+                                    setJoinLobby={setJoinLobby}
+                                />
+                            </div>
+                            <div style={{ width: "30vw" }}>
+                                <LobbyOptions
+                                    setNewLobby={setNewLobby}
+                                    socket={socket}
+                                    setJoinLobby={setJoinLobby}
+                                />
+                            </div>
+                        </div>
                     </div>
-                    <div style={{ width: "30vw" }}>
-                        <LobbyOptions
-                            setNewLobby={setNewLobby}
-                            socket={socket}
-                            setJoinLobby={setJoinLobby}
+                    {requirePassword ? (
+                        <LobbyPasswordPopup
+                            enterLobby={enterLobby}
+                            setRequirePassword={setRequirePassword}
                         />
-                    </div>
+                    ) : (
+                        <></>
+                    )}
+                    {awaitingChallenger ? <AwaitingChallengerPopup /> : <></>}
                 </div>
-            </div>
-            {requirePassword ? (
-                <LobbyPasswordPopup
-                    enterLobby={enterLobby}
-                    setRequirePassword={setRequirePassword}
-                />
-            ) : (
+            ) : connected ? (
                 <></>
+            ) : (
+                <div>Could not reach server</div>
             )}
-            {awaitingChallenger ? <AwaitingChallengerPopup /> : <></>}
         </>
     );
 }
