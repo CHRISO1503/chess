@@ -27,7 +27,6 @@ export default function OverTheBoard() {
         <>
             <Header />
             <Game
-                gameMode="offline"
                 boardMap={boardMap}
                 setBoardMap={setBoardMap}
                 moveMap={moveMap}
