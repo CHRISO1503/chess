@@ -16,7 +16,9 @@ export interface Lobby {
     hostIsWhite?: boolean;
 }
 
-const ENDPOINT = deployed ? "" : "http://localhost:5000";
+const ENDPOINT = deployed
+    ? "https://chess-backend-b9b8.onrender.com"
+    : "http://localhost:5000";
 
 export default function LobbyMenu({
     inGame,
