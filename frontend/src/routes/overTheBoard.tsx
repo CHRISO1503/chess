@@ -31,7 +31,7 @@ export default function OverTheBoard() {
                 setBoardMap={setBoardMap}
                 moveMap={moveMap}
                 setMoveMap={setMoveMap}
-                boardFlipped={true}
+                boardFlipped={false}
                 isWhitesTurn={isWhitesTurn}
                 setIsWhitesTurn={setIsWhitesTurn}
                 clickedSquare={clickedSquare}
