@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Socket } from "socket.io-client";
+import useWindowDimensions from "../../getWindowDimensions";
 import Board from "./board";
 import GameLogic from "./gameLogic";
 import Pieces from "./pieces";
@@ -103,24 +102,29 @@ export default function Game({
     passant: { passantable: boolean; at: number };
     setPassant: (value: { passantable: boolean; at: number }) => void;
 }) {
+    const { height, width } = useWindowDimensions();
+
     return (
         <>
             <div
                 style={{
                     display: "flex",
                     justifyContent: "center",
-                    minWidth: tileWidth * 8,
+                    transform:
+                        width > tileWidth * 8
+                            ? "scale(1)"
+                            : `scale(${width / (tileWidth * 8) - 0.05})`,
                 }}
             >
-                <div style={{ position: "absolute" }}>
+                <div>
                     <Board />
                 </div>
-                <div style={{ position: "absolute" }}>
+                <div style={{ marginLeft: -tileWidth * 8 }}>
                     <Pieces
                         boardMap={boardFlipped ? flipBoard(boardMap) : boardMap}
                     />
                 </div>
-                <div style={{ position: "absolute" }}>
+                <div style={{ marginLeft: -tileWidth * 8 }}>
                     <GameLogic
                         moveMap={moveMap}
                         setMoveMap={setMoveMap}

@@ -40,7 +40,7 @@ export default function LobbyMenu({
     const [lobbyList, setLobbyList] = useState([] as Lobby[]);
     const [requirePassword, setRequirePassword] = useState(false);
     const [awaitingChallenger, setAwaitingChallenger] = useState(false);
-    const [connected, setConnected] = useState(true);
+    const [connected, setConnected] = useState(false);
 
     // Connect to server
     useEffect(() => {
@@ -134,7 +134,10 @@ export default function LobbyMenu({
             ) : connected ? (
                 <></>
             ) : (
-                <div>Could not reach server</div>
+                <div>
+                    Could not reach server. Please try again in a couple of
+                    minutes.
+                </div>
             )}
         </>
     );
