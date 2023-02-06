@@ -7,13 +7,14 @@ export default function OnlineButton() {
     const navigate = useNavigate();
 
     return (
-        <div className="home-menu-button online-button" onClick={() => navigate("/online")}>
+        <div
+            className="home-menu-button online-button"
+            onClick={() => navigate("/online")}
+        >
             <div>
-                <img src={whiteKing} className="white-king" />
-                <img src={crossedSwords} className="crossed-swords" />
-                <img src={blackKing} className="black-king" />
+                <img src={crossedSwords} />
             </div>
-            Online Match
+            <p>Online Match</p>
         </div>
     );
 }

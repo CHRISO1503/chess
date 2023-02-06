@@ -105,26 +105,16 @@ export default function Game({
     const { height, width } = useWindowDimensions();
     return (
         <>
-            <div
-                style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    transform:
-                        width > tileWidth * 8
-                            ? "scale(1)"
-                            : `scale(${width / (tileWidth * 8) - 0.05})`,
-                    transformOrigin: "top",
-                }}
-            >
+            <div className="game">
                 <div>
                     <Board />
                 </div>
-                <div style={{ marginLeft: -tileWidth * 8 }}>
+                <div>
                     <Pieces
                         boardMap={boardFlipped ? flipBoard(boardMap) : boardMap}
                     />
                 </div>
-                <div style={{ marginLeft: -tileWidth * 8 }}>
+                <div>
                     <GameLogic
                         moveMap={moveMap}
                         setMoveMap={setMoveMap}

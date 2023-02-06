@@ -8,28 +8,16 @@ export default function Header() {
     const navigate = useNavigate();
     return (
         <div
-            style={{
-                display: "flex",
-                marginTop: 0,
-                marginBottom: "10px",
+            className="header"
+            onClick={() => {
+                navigate("/");
             }}
         >
             <img
                 src={blackKing}
-                style={{
-                    width: tileWidth * 0.65,
-                    userSelect: "none",
-                }}
                 draggable="false"
             />
             <button
-                className="navigate"
-                style={{
-                    textAlign: "center",
-                    fontSize: "3.5em",
-                    background: "none",
-                    border: "none",
-                }}
                 onClick={() => {
                     navigate("/");
                 }}

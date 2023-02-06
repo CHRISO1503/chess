@@ -9,9 +9,9 @@ export default function OverTheBoardButton() {
             onClick={() => navigate("/overtheboard")}
         >
             <div>
-                <img src={whiteKing} className="white-king" />
+                <img src={whiteKing} />
             </div>
-            Over the board
+            <p>Over the Board</p>
         </div>
     );
 }
