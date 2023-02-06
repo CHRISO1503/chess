@@ -10,7 +10,8 @@ export default function Header() {
         <div
             style={{
                 display: "flex",
-                justifyContent: "center",
+                marginTop: 0,
+                marginBottom: "10px",
             }}
         >
             <img
@@ -25,10 +26,7 @@ export default function Header() {
                 className="navigate"
                 style={{
                     textAlign: "center",
-                    fontSize: "4em",
-                    marginBottom: "10px",
-                    marginTop: "10px",
-                    minWidth: tileWidth * 2,
+                    fontSize: "3.5em",
                     background: "none",
                     border: "none",
                 }}
@@ -36,7 +34,7 @@ export default function Header() {
                     navigate("/");
                 }}
             >
-                Chess
+                Chess Online
             </button>
         </div>
     );

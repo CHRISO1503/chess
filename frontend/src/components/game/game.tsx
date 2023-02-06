@@ -103,7 +103,6 @@ export default function Game({
     setPassant: (value: { passantable: boolean; at: number }) => void;
 }) {
     const { height, width } = useWindowDimensions();
-
     return (
         <>
             <div
@@ -114,6 +113,7 @@ export default function Game({
                         width > tileWidth * 8
                             ? "scale(1)"
                             : `scale(${width / (tileWidth * 8) - 0.05})`,
+                    transformOrigin: "top",
                 }}
             >
                 <div>

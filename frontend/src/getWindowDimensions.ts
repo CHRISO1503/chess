@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 
 function getWindowDimensions() {
-    const { innerWidth: width, innerHeight: height } = window;
+    const storedWidth = localStorage.getItem("window-width");
+    const storedHeight = localStorage.getItem("window-height");
+    const { innerWidth: width, innerHeight: height } = {
+        innerWidth: storedWidth ? parseInt(storedWidth) : window.innerWidth,
+        innerHeight: storedHeight ? parseInt(storedHeight) : window.innerHeight,
+    };
     return {
         width,
         height,
@@ -15,12 +20,22 @@ export default function useWindowDimensions() {
 
     useEffect(() => {
         function handleResize() {
-            setWindowDimensions(getWindowDimensions());
+            setWindowDimensions({
+                width: window.innerWidth,
+                height: window.innerHeight,
+            });
         }
-
         window.addEventListener("resize", handleResize);
         return () => window.removeEventListener("resize", handleResize);
-    });
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem("window-width", windowDimensions.width.toString());
+        localStorage.setItem(
+            "window-height",
+            windowDimensions.height.toString()
+        );
+    }, [windowDimensions]);
 
     return windowDimensions;
 }

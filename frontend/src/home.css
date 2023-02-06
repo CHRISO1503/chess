@@ -1,14 +1,16 @@
-button.home-menu {
-    min-width: 20vw;
-    min-height: 5vh;
-    margin: 3vh;
-    font-size: 2em;
-    border-radius: 2px;
+@import url("https://fonts.googleapis.com/css2?family=Montserrat&display=swap");
+
+body {
+    background-color: rgb(50, 50, 60);
+    color: white;
 }
 
-button.home-menu:hover {
-    cursor: pointer;
-    background-color: grey;
+button,
+p,
+div {
+    color: white;
+    font-family: "Montserrat", sans-serif;
+    text-decoration: none;
 }
 
 .blur-content {
@@ -17,4 +19,78 @@ button.home-menu:hover {
 
 .navigate:hover {
     cursor: pointer;
+}
+
+.home-menu-button {
+    display: inline-flex;
+    flex-basis: auto;
+    font-size: 2.8em;
+    transform: scale(1);
+    transition: transform 100ms linear;
+    background-color: rgb(0, 0, 0);
+    border-radius: 30px;
+    padding: 10px;
+    text-align: center;
+    margin-inline: 100px;
+    align-items: center;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+.home-menu-button > div {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(60, 60, 70);
+    border-radius: 30px;
+    padding: 10px;
+    width: 350px;
+    height: 200px;
+    margin-right: 20%;
+}
+.home-menu-button:hover {
+    cursor: pointer;
+    transform: scale(1.1);
+    transition: transform 100ms linear;
+}
+.crossed-swords {
+    width: 80px;
+    height: 80px;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 60px;
+    transform: rotate(0deg);
+    transition: transform 100ms linear;
+}
+.online-button > div > .black-king {
+    width: 100px;
+    height: 100px;
+    margin-top: 100px;
+    transform: rotate(0deg);
+    transition: transform 100ms linear;
+}
+.online-button > div > .white-king {
+    width: 100px;
+    height: 100px;
+    transform: rotate(0deg);
+    transition: transform 100ms linear;
+}
+.online-button:hover > div > img.crossed-swords {
+    transform: rotate(-9deg);
+    transition: transform 250ms ease-in-out;
+}
+.online-button:hover > div > img.black-king {
+    transform: rotate(30deg);
+    transition: transform 250ms linear;
+}
+.online-button:hover > div > img.white-king {
+    transform: rotate(-20deg);
+    transition: transform 250ms linear;
+}
+.offline-button:hover > div > img.white-king {
+    transform: rotate(-12deg);
+    transition: transform 250ms linear;
+}
+.home-menu {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
