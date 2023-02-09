@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Lobby } from "./lobbyMenu";
+import { Lobby } from "./onlineMenu/lobbyMenu";
 import { Socket } from "socket.io-client";
 import Game, {
     cloneGrid,
@@ -25,6 +25,7 @@ export default function OnlineGame({
         [false, false],
     ]);
     const [passant, setPassant] = useState({ passantable: false, at: 0 });
+    const [isEmittingVariable, setIsEmittingVariable] = useState(false);
 
     useEffect(() => {
         if (lobby.hostIsWhite != null) {
@@ -47,7 +48,10 @@ export default function OnlineGame({
         socket.on("update-rooks-moved", (rooksMoved) =>
             setRooksMoved(rooksMoved)
         );
-        socket.on("update-passant", (passant) => setPassant(passant));
+        socket.on("update-passant", (passant) => {
+            setPassant(passant);
+            console.log("PASSANTABLE");
+        });
     }, []);
 
     // If the players turn has just ended, send map to server. If the players turn has begun, this is handled by socket.on("turn-began")
@@ -61,15 +65,24 @@ export default function OnlineGame({
 
     // Pass state to opponent on change
     useEffect(() => {
-        socket.emit("kings-moved", lobby, kingsMoved);
+        if (isEmittingVariable) {
+            socket.emit("kings-moved", lobby, kingsMoved);
+            setIsEmittingVariable(false);
+        }
     }, [kingsMoved]);
 
     useEffect(() => {
-        socket.emit("rooks-moved", lobby, rooksMoved);
+        if (isEmittingVariable) {
+            socket.emit("rooks-moved", lobby, rooksMoved);
+            setIsEmittingVariable(false);
+        }
     }, [rooksMoved]);
 
     useEffect(() => {
-        socket.emit("passant", lobby, passant);
+        if (isEmittingVariable) {
+            socket.emit("passant", lobby, passant);
+            setIsEmittingVariable(false);
+        }
     }, [passant]);
 
     return (
@@ -90,6 +103,7 @@ export default function OnlineGame({
             setRooksMoved={setRooksMoved}
             passant={passant}
             setPassant={setPassant}
+            setIsEmittingVariable={setIsEmittingVariable}
         />
     );
 }

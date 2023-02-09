@@ -1,29 +1,21 @@
-import { useNavigate } from "react-router-dom";
-import { tileWidth } from "./game/game";
 import blackKing from "../assets/pieces/b_king_svg_NoShadow.svg";
-import useWindowDimensions from "../getWindowDimensions";
+import home from "../assets/home.svg";
+import { useNavigate } from "react-router-dom";
 
 export default function Header() {
-    const { width, height } = useWindowDimensions();
     const navigate = useNavigate();
     return (
-        <div
-            className="header"
-            onClick={() => {
-                navigate("/");
-            }}
-        >
+        <div className="header">
             <img
-                src={blackKing}
+                src={home}
                 draggable="false"
+                className="home-button"
+                onClick={() => navigate("/")}
             />
-            <button
-                onClick={() => {
-                    navigate("/");
-                }}
-            >
-                Chess Online
-            </button>
+            <div>
+                <p>Chess Online</p>
+                <img src={blackKing} draggable="false" />
+            </div>
         </div>
     );
 }

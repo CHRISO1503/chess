@@ -25,11 +25,13 @@ interface Game {
 let games = [] as Game[];
 
 io.on("connection", (socket: Socket) => {
+    removeGame(socket);
     socket.emit("set-lobbies", games);
     socket.on("create-lobby", (game) => {
         if (game.id == -1) {
             return;
         } else {
+            removeGame(socket);
             games.push(game);
             socket.emit("set-lobbies", games);
         }
@@ -92,12 +94,14 @@ function sendOtherPlayerState(
     emitName: string
 ) {
     let emittee = "";
+    console.log(socket.id, lobby.id, lobby.opponentId);
     if (lobby.opponentId) {
         if (lobby.id == socket.id) {
             emittee = lobby.opponentId;
         } else {
-            emittee = socket.id;
+            emittee = lobby.id;
         }
+        console.log(emittee)
     }
     socket.to(emittee).emit(emitName, state);
 }

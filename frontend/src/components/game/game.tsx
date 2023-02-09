@@ -1,3 +1,4 @@
+import { Socket } from "socket.io-client";
 import useWindowDimensions from "../../getWindowDimensions";
 import Board from "./board";
 import GameLogic from "./gameLogic";
@@ -84,6 +85,7 @@ export default function Game({
     setRooksMoved,
     passant,
     setPassant,
+    setIsEmittingVariable,
 }: {
     boardFlipped: boolean;
     boardMap: SquareInfo[][];
@@ -101,6 +103,7 @@ export default function Game({
     setRooksMoved: (value: boolean[][]) => void;
     passant: { passantable: boolean; at: number };
     setPassant: (value: { passantable: boolean; at: number }) => void;
+    setIsEmittingVariable?: (value: boolean) => void;
 }) {
     const { height, width } = useWindowDimensions();
     return (
@@ -132,6 +135,7 @@ export default function Game({
                         setRooksMoved={setRooksMoved}
                         passant={passant}
                         setPassant={setPassant}
+                        setIsEmittingVariable={setIsEmittingVariable}
                     />
                 </div>
             </div>

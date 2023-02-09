@@ -18,24 +18,37 @@ div {
 }
 .header {
     display: flex;
-    margin-top: 0;
-    margin-bottom: 10px;
-    margin: auto;
 }
-.header > button {
+.header > div {
+    display: flex;
+    justify-content: center;
+    margin-top: 0;
+    margin-bottom: 1vh;
+    width: 100%;
+}
+.header > div > p {
     text-align: center;
-    font-size: min(10vw, 10vh, 3em);
+    font-size: min(7vw, 7vh, 3em);
     background: none;
     border: none;
+    margin: 2vh;
+    user-select: none;
 }
-.header > img {
+.header > img,
+.header > div > img {
     width: min(10vw, 10vh, 70px);
     user-select: none;
 }
-.header:hover {
-    cursor: pointer;
+.header > img {
+    margin-top: -2vh;
 }
 .header > button:hover {
+    cursor: pointer;
+}
+.header > .home-button {
+    float: left;
+}
+.header > .home-button:hover {
     cursor: pointer;
 }
 
@@ -47,6 +60,76 @@ div {
     height: 80vh;
 }
 
+@media (max-width: 800px) and (orientation: portrait) {
+    .home-menu-button {
+        display: inline-flex;
+        flex-basis: auto;
+        flex-direction: column;
+        font-size: 4vw;
+        transform: scale(1);
+        transition: transform 100ms linear;
+        background-color: rgb(30, 30, 50);
+        border-radius: 30px;
+        padding: 10px;
+        text-align: center;
+        margin-inline: 7vw;
+        align-items: center;
+        margin-top: 15px;
+        margin-bottom: 15px;
+        justify-content: space-between;
+        height: 22vh;
+        position: relative;
+        border-bottom: solid 1vh black;
+    }
+    .home-menu-button > div {
+        position: relative;
+        width: 50%;
+        height: 70%;
+        display: flex;
+        justify-content: center;
+    }
+    .online-button > div > img {
+        height: 80%;
+        padding-top: 10%;
+    }
+    .offline-button > div > img {
+        height: 100%;
+    }
+}
+
+@media (max-width: 1000px), (max-height: 1200px) {
+    .game {
+        display: flex;
+        justify-content: center;
+    }
+    .game > div {
+        position: absolute;
+        transform: scale(0.6);
+        transform-origin: top;
+    }
+}
+@media (max-width: 600px), (max-height: 600px) {
+    .game {
+        display: flex;
+        justify-content: center;
+    }
+    .game > div {
+        position: absolute;
+        transform: scale(0.4);
+        transform-origin: top;
+    }
+}
+@media (max-width: 350px), (max-height: 350px) {
+    .game {
+        display: flex;
+        justify-content: center;
+    }
+    .game > div {
+        position: absolute;
+        transform: scale(0.3);
+        transform-origin: top;
+    }
+}
 @media (min-width: 800px), (orientation: landscape) {
     .game {
         display: flex;
@@ -54,6 +137,7 @@ div {
     }
     .game > div {
         position: absolute;
+        transform: scale(0.8);
     }
 
     .home-menu-button {
@@ -118,76 +202,5 @@ div {
     .offline-button:hover > div > img {
         transform: rotate(-15deg) translate(-50%, -50%);
         transition: transform 100ms linear;
-    }
-}
-
-@media (max-width: 800px) and (orientation: portrait) {
-    .home-menu-button {
-        display: inline-flex;
-        flex-basis: auto;
-        flex-direction: column;
-        font-size: 4vw;
-        transform: scale(1);
-        transition: transform 100ms linear;
-        background-color: rgb(30, 30, 50);
-        border-radius: 30px;
-        padding: 10px;
-        text-align: center;
-        margin-inline: 7vw;
-        align-items: center;
-        margin-top: 15px;
-        margin-bottom: 15px;
-        justify-content: space-between;
-        height: 22vh;
-        position: relative;
-        border-bottom: solid 1vh black;
-    }
-    .home-menu-button > div {
-        position: relative;
-        width: 50%;
-        height: 70%;
-        display: flex;
-        justify-content: center;
-    }
-    .online-button > div > img {
-        height: 80%;
-        padding-top: 10%;
-    }
-    .offline-button > div > img {
-        height: 100%;
-    }
-}
-
-@media (max-width: 1000px), (max-height: 1000px) {
-    .game {
-        display: flex;
-        justify-content: center;
-    }
-    .game > div {
-        position: absolute;
-        transform: scale(0.6);
-        transform-origin: top;
-    }
-}
-@media (max-width: 600px), (max-height: 600px) {
-    .game {
-        display: flex;
-        justify-content: center;
-    }
-    .game > div {
-        position: absolute;
-        transform: scale(0.4);
-        transform-origin: top;
-    }
-}
-@media (max-width: 350px), (max-height: 350px) {
-    .game {
-        display: flex;
-        justify-content: center;
-    }
-    .game > div {
-        position: absolute;
-        transform: scale(0.3);
-        transform-origin: top;
     }
 }

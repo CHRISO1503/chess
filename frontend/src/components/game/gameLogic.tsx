@@ -43,6 +43,7 @@ export default function GameLogic({
     setRooksMoved,
     passant,
     setPassant,
+    setIsEmittingVariable,
 }: {
     moveMap: boolean[][];
     setMoveMap: (value: boolean[][]) => void;
@@ -60,6 +61,7 @@ export default function GameLogic({
     setRooksMoved: (value: boolean[][]) => void;
     passant: { passantable: boolean; at: number };
     setPassant: (value: { passantable: boolean; at: number }) => void;
+    setIsEmittingVariable?: (value: boolean) => void;
 }) {
     const [promotion, setPromotion] = useState({} as Promotion);
     const [playerWins, setPlayerWins] = useState({
@@ -162,15 +164,27 @@ export default function GameLogic({
         if (!phantomMove) {
             if (clickedSquare[2] == 0 && clickedSquare[3] == 7) {
                 rooksMoved[0][0] = true;
+                if (setIsEmittingVariable) {
+                    setIsEmittingVariable(true);
+                }
                 setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
                 rooksMoved[0][1] = true;
+                if (setIsEmittingVariable) {
+                    setIsEmittingVariable(true);
+                }
                 setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 0 && clickedSquare[3] == 0) {
                 rooksMoved[1][0] = true;
+                if (setIsEmittingVariable) {
+                    setIsEmittingVariable(true);
+                }
                 setRooksMoved(cloneGrid(rooksMoved));
             } else if (clickedSquare[2] == 7 && clickedSquare[3] == 7) {
                 rooksMoved[1][1] = true;
+                if (setIsEmittingVariable) {
+                    setIsEmittingVariable(true);
+                }
                 setRooksMoved(cloneGrid(rooksMoved));
             } else if (
                 board[clickedSquare[2]][clickedSquare[3]].pieceType == "K"
@@ -186,17 +200,29 @@ export default function GameLogic({
                 // King has moved
                 if (board[clickedSquare[2]][clickedSquare[3]].isWhite) {
                     kingsMoved[0] = true;
+                    if (setIsEmittingVariable) {
+                        setIsEmittingVariable(true);
+                    }
                     setKingsMoved(kingsMoved.slice());
                 } else {
                     kingsMoved[1] = true;
+                    if (setIsEmittingVariable) {
+                        setIsEmittingVariable(true);
+                    }
                     setKingsMoved(kingsMoved.slice());
                 }
             }
             // Set passant and promote
             if (board[clickedSquare[2]][clickedSquare[3]].pieceType == "P") {
                 if (Math.abs(clickedSquare[1] - clickedSquare[3]) == 2) {
+                    if (setIsEmittingVariable) {
+                        setIsEmittingVariable(true);
+                    }
                     setPassant({ passantable: true, at: clickedSquare[0] });
                 } else {
+                    if (setIsEmittingVariable) {
+                        setIsEmittingVariable(true);
+                    }
                     setPassant({ passantable: false, at: 0 });
                 }
                 if (clickedSquare[1] == 0 || clickedSquare[1] == 7) {

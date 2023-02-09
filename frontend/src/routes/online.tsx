@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import LobbyMenu, { Lobby } from "../components/lobbyMenu";
+import LobbyMenu, { Lobby } from "../components/onlineMenu/lobbyMenu";
 import OnlineGame from "../components/onlineGame";
 import socketIOClient, { Socket } from "socket.io-client";
 import Header from "../components/header";

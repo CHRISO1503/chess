@@ -1,4 +1,4 @@
-import LoadingIcon from "./loadingIcon";
+import LoadingIcon from "../loadingIcon";
 
 export default function () {
     return (

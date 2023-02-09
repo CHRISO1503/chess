@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import socketIOClient, { Socket } from "socket.io-client";
 import LobbyList from "./lobbyList";
 import LobbyOptions from "./lobbyOptions";
-import { deployed } from "../appSettings";
-import { SquareInfo } from "./game/game";
+import { deployed } from "../../appSettings";
+import { SquareInfo } from "../game/game";
 import LobbyPasswordPopup from "./lobbyPasswordPopup";
 import AwaitingChallengerPopup from "./awaitingChallengerPopup";
 
@@ -106,15 +106,15 @@ export default function LobbyMenu({
                             }}
                         >
                             <div style={{ width: "30vw" }}>
-                                <LobbyList
-                                    lobbyList={lobbyList}
+                                <LobbyOptions
+                                    setNewLobby={setNewLobby}
                                     socket={socket}
                                     setJoinLobby={setJoinLobby}
                                 />
                             </div>
                             <div style={{ width: "30vw" }}>
-                                <LobbyOptions
-                                    setNewLobby={setNewLobby}
+                                <LobbyList
+                                    lobbyList={lobbyList}
                                     socket={socket}
                                     setJoinLobby={setJoinLobby}
                                 />
@@ -135,8 +135,8 @@ export default function LobbyMenu({
                 <></>
             ) : (
                 <div>
-                    Could not reach server. Please try again in a couple of
-                    minutes.
+                    Connecting to the server... If this takes more than one
+                    minute, you may need to refresh the page.
                 </div>
             )}
         </>
