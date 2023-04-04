@@ -20,7 +20,7 @@ export default function LobbyOptions({
         const lobby = {
             id: socket.id,
             name: lobbyName,
-            password: lobbyPassword != "" ? lobbyPassword : undefined,
+            password: lobbyPassword !== "" ? lobbyPassword : undefined,
             boardMap: initialiseBoardMapAndMoveMap().boardMap,
         };
         setNewLobby(lobby);

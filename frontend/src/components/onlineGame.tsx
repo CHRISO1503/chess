@@ -50,7 +50,6 @@ export default function OnlineGame({
         );
         socket.on("update-passant", (passant) => {
             setPassant(passant);
-            console.log("PASSANTABLE");
         });
     }, []);
 

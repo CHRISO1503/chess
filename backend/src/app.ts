@@ -46,7 +46,7 @@ io.on("connection", (socket: Socket) => {
         let index = games.findIndex((x) => x.id == lobbyId);
         if (index != -1) {
             games[index].opponentId = playerNumber;
-            Math.round(Math.random()) == 1
+            Math.round(Math.random()) === 1
                 ? (games[index].hostIsWhite = true)
                 : (games[index].hostIsWhite = false);
             // Let host and current client (joiner) know lobby is created

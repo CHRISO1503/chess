@@ -10,7 +10,7 @@ export default function Online() {
     const [lobby, setLobby] = useState({ id: "", name: "" } as Lobby);
 
     useEffect(() => {
-        if (lobby.id != "") {
+        if (lobby.id !== "") {
             setInGame(true);
         }
     }, [lobby]);
